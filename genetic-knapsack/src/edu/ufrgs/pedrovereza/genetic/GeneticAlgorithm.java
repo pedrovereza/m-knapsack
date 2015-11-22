@@ -2,38 +2,47 @@ package edu.ufrgs.pedrovereza.genetic;
 
 import static java.util.Collections.reverseOrder;
 
+import java.util.Random;
+
 public class GeneticAlgorithm<T extends Chromosome<T>> {
 
     private final Fitness<T, Integer> fitness;
+    private final Random random;
     private Population<T> population;
     private T best;
+    private int generationsWithoutImprovement = 0;
 
-    public GeneticAlgorithm(Population<T> population, Fitness<T, Integer> fitness) {
+
+    public GeneticAlgorithm(Population<T> population, Fitness<T, Integer> fitness, Random random) {
         this.population = population;
         this.fitness = fitness;
+        this.random = random;
         this.best = population.getBest();
     }
 
     public T run() {
+        long startTime = System.currentTimeMillis();
 
         int populationSize = population.size();
 
-        for (int i = 0; i < 3000; ++i) {
-
-            for (T c : population) {
-                System.out.println(fitness.calculate(c));
-            }
+        while (generationsWithoutImprovement < 5000) {
 
             population.sort(reverseOrder(fitness));
 
             T bestOfGeneration = population.getBest();
 
-//            System.out.println("Best of generation:" + fitness.calculate(bestOfGeneration));
             if (fitness.calculate(best) < fitness.calculate(bestOfGeneration)) {
+                long estimatedTime = System.currentTimeMillis() - startTime;
+
+                System.out.println("New best: " + fitness.calculate(bestOfGeneration) + " found at: " + estimatedTime
+                        / 1000.0);
+
                 this.best = bestOfGeneration.copy();
+                generationsWithoutImprovement = 0;
             }
 
-            Population<T> nextPopulation = new Population<T>(populationSize);
+            Population<T> nextPopulation = new Population<T>(populationSize, random);
+
 
             for (T chromosome : population) {
                 if (nextPopulation.size() == 10) {
@@ -43,13 +52,16 @@ public class GeneticAlgorithm<T extends Chromosome<T>> {
                 nextPopulation.addChromosome(chromosome);
             }
 
-            for (int j = 0; j < 6; ++j) {
-                nextPopulation.addChromosome(population.randomChrosomose());
+            for (int j = 0; j < 5; ++j) {
+                nextPopulation.addChromosome(population.randomChromosome());
             }
 
             nextPopulation.evolve();
 
             this.population = nextPopulation;
+
+            generationsWithoutImprovement++;
+
 
         }
 

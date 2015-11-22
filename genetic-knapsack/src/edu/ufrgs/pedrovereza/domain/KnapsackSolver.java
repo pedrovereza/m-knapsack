@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class KnapsackSolver {
 
-    public static final int POPULATION_SIZE = 80;
+    public static final int POPULATION_SIZE = 50;
     private final Random random = new Random();
     private Instance instance;
 
@@ -17,12 +17,13 @@ public class KnapsackSolver {
 
     public Knapsack solve() {
         KnapsackFitness knapsackFitness = new KnapsackFitness(instance);
-        return new GeneticAlgorithm<Knapsack>(createInitialPopulation(), knapsackFitness)
+        return new GeneticAlgorithm<Knapsack>(createInitialPopulation(), knapsackFitness, random)
                 .run();
     }
 
     private Population<Knapsack> createInitialPopulation() {
-        Population<Knapsack> population = new Population<Knapsack>(POPULATION_SIZE);
+        Population<Knapsack> population = new Population<Knapsack>(POPULATION_SIZE, random);
+
         KnapsackFactory factory = new KnapsackFactory(instance, random);
 
         for (int i = 0; i < POPULATION_SIZE; ++i) {

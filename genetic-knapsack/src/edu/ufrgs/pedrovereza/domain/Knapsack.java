@@ -51,7 +51,7 @@ public class Knapsack implements Chromosome<Knapsack> {
         boolean [] itemsTakenCopy = itemsTaken.clone();
 
         for (int i = 0; i < itemsTakenCopy.length; ++i) {
-            if (random.nextDouble() < 0.10) {
+            if (random.nextDouble() < 0.4) {
                 itemsTakenCopy[i] = !itemsTakenCopy[i];
             }
         }
@@ -62,20 +62,13 @@ public class Knapsack implements Chromosome<Knapsack> {
     @Override
     public List<Knapsack> crossOverWith(Knapsack other) {
         boolean[] itemsTakenOffspring1 = itemsTaken.clone();
-        boolean[] itemsTakenOffspring2 = itemsTaken.clone();
+        boolean[] itemsTakenOffspring2 = other.itemsTaken.clone();
 
-        int partition = (int) (random.nextDouble() * itemsTaken.length);
-//        System.out.println("partition: " + partition);
-
-        for (int i = 0; i <= partition; ++i) {
-            itemsTakenOffspring1[i] =  itemsTaken[i];
-            itemsTakenOffspring2[i] =  other.itemsTaken[i];
-
-        }
-
-        for (int i = partition + 1; i < itemsTaken.length; ++i) {
-            itemsTakenOffspring1[i] =  other.itemsTaken[i];
-            itemsTakenOffspring2[i] =  itemsTaken[i];
+        for (int i = 0; i < itemsTaken.length; ++i) {
+            if (random.nextDouble() < 0.5) {
+                itemsTakenOffspring1[i] = other.itemsTaken[i];
+                itemsTakenOffspring2[i] = itemsTaken[i];
+            }
         }
 
         return asList(new Knapsack(instance, itemsTakenOffspring1, random),

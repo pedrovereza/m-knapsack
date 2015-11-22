@@ -11,10 +11,11 @@ public class Population<T extends Chromosome<T>> implements Iterable<T> {
 
     private final List<T> chromosomes;
     private final int maxSize;
-    private final Random random = new Random();
+    private final Random random;
 
-    public Population(int size) {
+    public Population(int size, Random random) {
         this.maxSize = size;
+        this.random = random;
         this.chromosomes = new ArrayList<T>(size);
     }
 
@@ -41,25 +42,23 @@ public class Population<T extends Chromosome<T>> implements Iterable<T> {
 
     public void evolve() {
 
-
         while (size() < maxSize) {
-            for (T chromosome : chromosomes) {
-                chromosome.mutate();
-            }
 
+            int currentSize = size();
+
+            for (int i = 0; i < currentSize; ++i) {
+                chromosomes.add(chromosomes.get(i).mutate());
+            }
 
             for (int i = 0; i < maxSize && size() < maxSize; ++i) {
 
-                for (T sibling : chromosomes.get(i).crossOverWith(randomChrosomose())) {
+                for (T sibling : chromosomes.get(i).crossOverWith(randomChromosome())) {
                     chromosomes.add(sibling);
                 }
             }
 
-            trim();
-
-            System.out.println("Worst:" + chromosomes.get(maxSize - 1));
-
         }
+        trim();
 
     }
 
@@ -67,7 +66,7 @@ public class Population<T extends Chromosome<T>> implements Iterable<T> {
         this.chromosomes.subList(0, maxSize - 1);
     }
 
-    public T randomChrosomose() {
+    public T randomChromosome() {
         return chromosomes.get((int) (random.nextDouble() * size()));
     }
 
@@ -77,7 +76,7 @@ public class Population<T extends Chromosome<T>> implements Iterable<T> {
 
         @Override
         public boolean hasNext() {
-            return currentIndex < chromosomes.size() - 1;
+            return currentIndex < chromosomes.size();
         }
 
         @Override

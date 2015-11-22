@@ -1,11 +1,10 @@
 package edu.ufrgs.pedrovereza.domain;
 
-import edu.ufrgs.pedrovereza.genetic.ChromosomeGenerator;
+import edu.ufrgs.pedrovereza.genetic.ChromosomeFactory;
 
-import java.util.BitSet;
 import java.util.Random;
 
-public class KnapsackFactory implements ChromosomeGenerator<Knapsack> {
+public class KnapsackFactory implements ChromosomeFactory<Knapsack> {
 
     private final Instance instance;
     private Random random;
@@ -16,19 +15,15 @@ public class KnapsackFactory implements ChromosomeGenerator<Knapsack> {
     }
 
     @Override
-    public Knapsack generate(int size) {
-        BitSet bitSet = new BitSet(size);
+    public Knapsack createWithSize(int size) {
+        boolean [] itemsTaken = new boolean[size];
 
         for (int i = 0; i < size; ++i) {
-            if (random.nextDouble() > 0.50)
-                bitSet.set(i);
+            if (random.nextDouble() > 0.50) {
+                itemsTaken[i] = true;
+            }
         }
 
-        for (int i = 0; i < size; ++i) {
-            System.out.println(bitSet.get(i) ? '1' : '0');
-        }
-
-
-        return new Knapsack(instance, bitSet, random);
+        return new Knapsack(instance, itemsTaken, random);
     }
 }

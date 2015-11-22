@@ -1,54 +1,50 @@
 package edu.ufrgs.pedrovereza.genetic;
 
 import static java.util.Collections.reverseOrder;
-import edu.ufrgs.pedrovereza.domain.Instance;
-
-import java.util.Random;
 
 public class GeneticAlgorithm<T extends Chromosome<T>> {
 
+    private final Fitness<T, Integer> fitness;
     private Population<T> population;
     private T best;
-    private Instance instance;
-    private final ChromosomeGenerator<T> generator;
-    private Random random;
-    private int populationSize;
-    private Fitness<T, Integer> fitness;
 
-    public GeneticAlgorithm(Instance instance, ChromosomeGenerator<T> generator, Random random, Fitness<T, Integer> fitness) {
-        this.random = random;
-        this.instance = instance;
-        this.generator = generator;
+    public GeneticAlgorithm(Population<T> population, Fitness<T, Integer> fitness) {
+        this.population = population;
         this.fitness = fitness;
-        this.populationSize = 20;
-    }
-
-    public GeneticAlgorithm<T> populationSize(int size) {
-        this.populationSize = 20;
-        return this;
+        this.best = population.getBest();
     }
 
     public T run() {
-        population = new Population<T>(populationSize);
 
-        for (int i = 0; i < populationSize; ++i) {
-            population.addChromosome(generator.generate(instance.items().size()));
-        }
+        int populationSize = population.size();
 
+        for (int i = 0; i < 3000; ++i) {
 
-        for (int i = 0; i < 50; ++i) {
+            for (T c : population) {
+                System.out.println(fitness.calculate(c));
+            }
+
             population.sort(reverseOrder(fitness));
 
-            this.best = population.getBest();
+            T bestOfGeneration = population.getBest();
+
+//            System.out.println("Best of generation:" + fitness.calculate(bestOfGeneration));
+            if (fitness.calculate(best) < fitness.calculate(bestOfGeneration)) {
+                this.best = bestOfGeneration.copy();
+            }
 
             Population<T> nextPopulation = new Population<T>(populationSize);
 
             for (T chromosome : population) {
-                if (nextPopulation.size() == 6) {
+                if (nextPopulation.size() == 10) {
                     break;
                 }
 
                 nextPopulation.addChromosome(chromosome);
+            }
+
+            for (int j = 0; j < 6; ++j) {
+                nextPopulation.addChromosome(population.randomChrosomose());
             }
 
             nextPopulation.evolve();
@@ -57,8 +53,8 @@ public class GeneticAlgorithm<T extends Chromosome<T>> {
 
         }
 
+
+
         return best;
     }
-
-
 }

@@ -3,7 +3,6 @@ package edu.ufrgs.pedrovereza.domain;
 import static java.util.Arrays.asList;
 import edu.ufrgs.pedrovereza.genetic.Chromosome;
 
-import java.util.BitSet;
 import java.util.List;
 import java.util.Random;
 
@@ -11,10 +10,10 @@ public class Knapsack implements Chromosome<Knapsack> {
 
     private final Instance instance;
 
-    private final BitSet itemsTaken;
+    private final boolean[] itemsTaken;
     private final Random random;
 
-    public Knapsack(Instance instance, BitSet itemsTaken, Random random) {
+    public Knapsack(Instance instance, boolean[] itemsTaken, Random random) {
         this.instance = instance;
         this.random = random;
         this.itemsTaken = itemsTaken;
@@ -44,49 +43,60 @@ public class Knapsack implements Chromosome<Knapsack> {
     }
 
     public boolean hasItem(Item item) {
-        return itemsTaken.get(item.getIndex());
+        return itemsTaken[item.getIndex()];
     }
 
     @Override
     public Knapsack mutate() {
-        for (int i = 0; i < itemsTaken.size(); ++i) {
+        boolean [] itemsTakenCopy = itemsTaken.clone();
+
+        for (int i = 0; i < itemsTakenCopy.length; ++i) {
             if (random.nextDouble() < 0.10) {
-                itemsTaken.flip(i);
+                itemsTakenCopy[i] = !itemsTakenCopy[i];
             }
         }
 
-        return null;
+        return new Knapsack(instance, itemsTakenCopy, random);
     }
 
     @Override
     public List<Knapsack> crossOverWith(Knapsack other) {
-        BitSet itemsTakenSimbling1 = new BitSet(itemsTaken.size());
-        BitSet itemsTakenSimbling2 = new BitSet(itemsTaken.size());
+        boolean[] itemsTakenOffspring1 = itemsTaken.clone();
+        boolean[] itemsTakenOffspring2 = itemsTaken.clone();
 
-        int partition = itemsTaken.size() / 2;
+        int partition = (int) (random.nextDouble() * itemsTaken.length);
+//        System.out.println("partition: " + partition);
 
         for (int i = 0; i <= partition; ++i) {
-            itemsTakenSimbling1.set(i, itemsTaken.get(i));
-            itemsTakenSimbling2.set(i, other.itemsTaken.get(i));
+            itemsTakenOffspring1[i] =  itemsTaken[i];
+            itemsTakenOffspring2[i] =  other.itemsTaken[i];
+
         }
 
-        for (int i = partition + 1; i < itemsTaken.size(); ++i) {
-            itemsTakenSimbling1.set(i, other.itemsTaken.get(i));
-            itemsTakenSimbling2.set(i, itemsTaken.get(i));
+        for (int i = partition + 1; i < itemsTaken.length; ++i) {
+            itemsTakenOffspring1[i] =  other.itemsTaken[i];
+            itemsTakenOffspring2[i] =  itemsTaken[i];
         }
 
-        return asList(new Knapsack(instance, itemsTakenSimbling1, random),
-                new Knapsack(instance, itemsTakenSimbling2, random));
+        return asList(new Knapsack(instance, itemsTakenOffspring1, random),
+                new Knapsack(instance, itemsTakenOffspring2, random));
     }
 
     @Override
     public String toString() {
         String str = "itemsTaken=";
 
-        for (int i = 0; i < instance.items().size(); ++i) {
-            str += itemsTaken.get(i) ? "1" : "0";
+        for (boolean itemTaken : itemsTaken) {
+            str += itemTaken ? "1" : "0";
         }
 
         return str;
+    }
+
+    @Override
+    public Knapsack copy() {
+        boolean[] itemsTakenCopy = itemsTaken.clone();
+
+        return new Knapsack(instance, itemsTakenCopy, random);
     }
 }

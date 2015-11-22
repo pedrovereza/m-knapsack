@@ -41,24 +41,33 @@ public class Population<T extends Chromosome<T>> implements Iterable<T> {
 
     public void evolve() {
 
+
         while (size() < maxSize) {
             for (T chromosome : chromosomes) {
                 chromosome.mutate();
             }
 
-            for (int i = 0; i < maxSize; ++i) {
+
+            for (int i = 0; i < maxSize && size() < maxSize; ++i) {
 
                 for (T sibling : chromosomes.get(i).crossOverWith(randomChrosomose())) {
                     chromosomes.add(sibling);
                 }
             }
 
+            trim();
+
+            System.out.println("Worst:" + chromosomes.get(maxSize - 1));
 
         }
 
     }
 
-    private T randomChrosomose() {
+    private void trim() {
+        this.chromosomes.subList(0, maxSize - 1);
+    }
+
+    public T randomChrosomose() {
         return chromosomes.get((int) (random.nextDouble() * size()));
     }
 

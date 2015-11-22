@@ -21,4 +21,11 @@ public class Instance {
     public Collection<Dimension> dimensions() {
         return unmodifiableCollection(dimensions);
     }
+
+    public int numberOfItems() {
+        return items.size();
+    }
+    public int numberOfDimension() {
+        return dimensions.size();
+    }
 }

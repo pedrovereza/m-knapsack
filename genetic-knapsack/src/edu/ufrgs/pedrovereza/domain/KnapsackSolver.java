@@ -7,12 +7,13 @@ import java.util.Random;
 
 public class KnapsackSolver {
 
-    public static final int POPULATION_SIZE = 50;
     private final Random random = new Random();
     private Instance instance;
+    private final Integer populationSize;
 
-    public KnapsackSolver(Instance instance) {
+    public KnapsackSolver(Instance instance, Integer populationSize) {
         this.instance = instance;
+        this.populationSize = populationSize;
     }
 
     public Knapsack solve() {
@@ -22,11 +23,11 @@ public class KnapsackSolver {
     }
 
     private Population<Knapsack> createInitialPopulation() {
-        Population<Knapsack> population = new Population<Knapsack>(POPULATION_SIZE, random);
+        Population<Knapsack> population = new Population<Knapsack>(populationSize, random);
 
         KnapsackFactory factory = new KnapsackFactory(instance, random);
 
-        for (int i = 0; i < POPULATION_SIZE; ++i) {
+        for (int i = 0; i < populationSize; ++i) {
             population.addChromosome(factory.createWithSize(instance.numberOfItems()));
         }
 

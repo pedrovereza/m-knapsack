@@ -58,11 +58,10 @@ public class Population<T extends Chromosome<T>> implements Iterable<T> {
             }
 
         }
-        trim();
 
     }
 
-    private void trim() {
+    public void trim() {
         this.chromosomes.subList(0, maxSize - 1);
     }
 

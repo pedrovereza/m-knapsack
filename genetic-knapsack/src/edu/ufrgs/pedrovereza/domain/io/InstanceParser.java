@@ -13,11 +13,21 @@ import java.util.Scanner;
 public class InstanceParser {
     private Scanner scanner;
 
+    public Instance readFromStandardIO() {
+        this.scanner = new Scanner(System.in);
+
+        return readInstance();
+    }
+
     public Instance parseFile(String filePath) throws FileNotFoundException {
         File file = new File(filePath);
 
         scanner = new Scanner(file);
 
+        return readInstance();
+    }
+
+    private Instance readInstance() {
         List<Item> items = new ArrayList<Item>();
         List<Dimension> dimensions = new ArrayList<Dimension>();
 

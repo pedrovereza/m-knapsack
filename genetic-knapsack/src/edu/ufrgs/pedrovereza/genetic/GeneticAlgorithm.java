@@ -28,6 +28,7 @@ public class GeneticAlgorithm<T extends Chromosome<T>> {
         while (generationsWithoutImprovement < 5000) {
 
             population.sort(reverseOrder(fitness));
+            population.trim();
 
             T bestOfGeneration = population.getBest();
 
@@ -42,7 +43,6 @@ public class GeneticAlgorithm<T extends Chromosome<T>> {
             }
 
             Population<T> nextPopulation = new Population<T>(populationSize, random);
-
 
             for (T chromosome : population) {
                 if (nextPopulation.size() == 10) {
